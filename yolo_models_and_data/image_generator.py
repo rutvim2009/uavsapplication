@@ -73,7 +73,7 @@ def generate_dataset(out_root="synthetic_odlc", blank_ratio=0.2):
         with open(label_file, "w") as f:
             f.write(f"0 {xc:.6f} {yc:.6f} {w:.6f} {h:.6f}\n")
 
-    print(f"{n_images} images in '{out_root}'")
+    print(f"1000 images in '{out_root}'")
 
 
 if __name__ == "__main__":
