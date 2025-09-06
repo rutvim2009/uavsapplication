@@ -30,7 +30,7 @@ gdf = gdf.to_crs(epsg=epsg_code)
 proj_coords = np.vstack([gdf.geometry.x, gdf.geometry.y]).T
 
 
-db = DBSCAN(eps=0.0005, min_samples=5).fit(proj_coords)  
+db = DBSCAN(eps=15, min_samples=5).fit(proj_coords)  
 mask = db.labels_ != -1
 filtered = proj_coords[mask]
 
