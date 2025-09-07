@@ -6,7 +6,7 @@ import cv2
 
 
 def make_background(h=1080, w=1920):
-    """Simple gradient background"""
+    
     base = np.full((h, w, 3), 200, dtype=np.uint8)
     if random.random() < 0.5:
         grad = np.tile(np.linspace(0, 50, w, dtype=np.uint8), (h, 1))
@@ -33,15 +33,15 @@ def make_odlc(size=200):
 
     return patch
 
-def place_patch(bg, patch):
+def place_odlc(bg, odlc):
     h, w, _ = bg.shape
-    ph, pw, _ = patch.shape
+    ph, pw, _ = odlc.shape
     x = random.randint(0, w - pw)
     y = random.randint(0, h - ph)
 
     roi = bg[y:y+ph, x:x+pw]
-    mask = cv2.cvtColor(patch, cv2.COLOR_BGR2GRAY) > 0
-    roi[mask] = patch[mask]
+    mask = cv2.cvtColor(odlc, cv2.COLOR_BGR2GRAY) > 0
+    roi[mask] = odlc[mask]
     return x, y, x+pw, y+ph
 
 def bbox_to_yolo(x1, y1, x2, y2):
@@ -52,22 +52,26 @@ def bbox_to_yolo(x1, y1, x2, y2):
     return float(np.clip(xc,0,1)), float(np.clip(yc,0,1)), float(np.clip(w,0,1)), float(np.clip(h,0,1))
 
 
-def generate_dataset(out_root="synthetic_odlc", blank_ratio=0.2):
-    os.makedirs(os.path.join(out_root, "images"), exist_ok=True)
-    os.makedirs(os.path.join(out_root, "labels"), exist_ok=True)
+def generate_dataset(out_root="synthetic_odlc", blank_ratio=0.2, train_ratio=0.8):
+
+    for split in ["train", "val"]:
+        os.makedirs(os.path.join(out_root, "images", split), exist_ok=True)
+        os.makedirs(os.path.join(out_root, "labels", split), exist_ok=True)
 
     for i in range(1000):
+        split = "train" if random.random() < train_ratio else "val"
+
         bg = make_background()
-        label_file = os.path.join(out_root, "labels", f"{i:06d}.txt")
-        img_file = os.path.join(out_root, "images", f"{i:06d}.jpg")
+        label_file = os.path.join(out_root, "labels", split, f"{i:06d}.txt")
+        img_file = os.path.join(out_root, "images", split, f"{i:06d}.jpg")
 
         if random.random() < blank_ratio:
             cv2.imwrite(img_file, bg)
             open(label_file, "w").close()
             continue
 
-        patch = make_odlc(size=random.choice([160,192,224,256]))
-        x1, y1, x2, y2 = place_patch(bg, patch)
+        odlc = make_odlc(size=random.choice([160, 192, 224, 256]))
+        x1, y1, x2, y2 = place_odlc(bg, odlc)
         xc, yc, w, h = bbox_to_yolo(x1, y1, x2, y2)
         cv2.imwrite(img_file, bg)
         with open(label_file, "w") as f:
@@ -77,4 +81,4 @@ def generate_dataset(out_root="synthetic_odlc", blank_ratio=0.2):
 
 
 if __name__ == "__main__":
-    generate_dataset(out_root="synthetic_odlc", blank_ratio=0.2)
+    generate_dataset(out_root="synthetic_odlc", blank_ratio=0.2, train_ratio=0.8)
