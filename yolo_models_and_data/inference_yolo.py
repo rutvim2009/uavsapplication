@@ -4,7 +4,7 @@ import os
 
 def run_inference(model_path="/workspaces/uavsapplication/yolo_models_and_data/runs_odlc/exp/weights/best.pt", source="/workspaces/uavsapplication/yolo_models_and_data/yolo_model_test_images"):
     model = YOLO(model_path)
-    images = [source]
+    images = [os.path.join(source, f) for f in os.listdir(source) if f.endswith((".jpg", ".png"))]
 
     os.makedirs("predictions", exist_ok=True)
 
