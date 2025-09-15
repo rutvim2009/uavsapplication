@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans, DBSCAN
 
 
-data = "/workspaces/uavsapplication/with outliers.txt"
+data = "/workspaces/uavsapplication/centroid_stuff/with outliers.txt"
 
 with open(data, "r") as d:
     data_split = d.read().strip().split("\n")
@@ -29,8 +29,9 @@ for i in range(5):
 
 centroids.sort(key=lambda x: x[0])
 
-for lat, lon in centroids:
-    print(f"{lat:.5f} {lon:.5f}")
+with open("/workspaces/uavsapplication/centroid_stuff/centers.out", "w") as f:
+    for lat, lon in centroids:
+        f.write(f"{lat:.5f} {lon:.5f}\n")
 
 plt.figure(figsize=(8, 6))
 plt.scatter(coords[:,1], coords[:,0], c="gray", s=10, alpha=0.5, label="all detections")
