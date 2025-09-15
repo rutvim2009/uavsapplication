@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import os
 
 def train_yolo():
-    data_yaml = os.path.join("synthetic_odlc", "odlc_data.yaml")
+    data_yaml = os.path.join("synthetic_odlc", "/workspaces/uavsapplication/yolo_models_and_data/synthetic_odlc/odlc_data.yaml")
 
     model = YOLO("yolov8n.pt")
 
